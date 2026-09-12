@@ -214,5 +214,16 @@
         "valueType": "string"
       }
     ]
+  },
+  {
+    "id": "product-cf",
+    "fields": [
+      {
+        "component": "aem-content",
+        "name": "reference",
+        "label": "Product",
+        "description": "Pick the Product Content Fragment to render on this page"
+      }
+    ]
   }
 ]

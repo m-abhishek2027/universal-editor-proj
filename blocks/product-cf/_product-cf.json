@@ -1,0 +1,33 @@
+{
+  "definitions": [
+    {
+      "title": "Product (Content Fragment)",
+      "id": "product-cf",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block",
+            "template": {
+              "name": "Product (Content Fragment)",
+              "model": "product-cf"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "product-cf",
+      "fields": [
+        {
+          "component": "aem-content",
+          "name": "reference",
+          "label": "Product",
+          "description": "Pick the Product Content Fragment to render on this page"
+        }
+      ]
+    }
+  ],
+  "filters": []
+}
