@@ -8,6 +8,13 @@
  * fragment; this block fetches the fragment's data on render.
  * Background: https://www.aem.live/developer/content-fragment-overlay
  *
+ * IMPORTANT: this block's folder/file/model id ("product-content-fragment")
+ * must match this block's DEFINITION TITLE run through toClassName() in
+ * scripts/aem.js — xwalk derives the rendered block's CSS class from the
+ * component definition's "title", not its "id". Renaming the title in
+ * _product-content-fragment.json without renaming this folder/files to
+ * match will silently break decoration again.
+ *
  * Matches this persisted query (adjust here if the query changes):
  *
  * query ($path: String!) {
@@ -55,12 +62,18 @@ async function fetchProduct(path) {
     const resp = await fetch(url);
     if (!resp.ok) return null;
     const json = await resp.json();
+    if (json.errors) {
+      // A 200 response can still carry GraphQL errors with data: null, e.g.
+      // "no resource available" when the fragment isn't published yet.
+      // eslint-disable-next-line no-console
+      console.warn('product-content-fragment: GraphQL errors for', path, json.errors);
+    }
     // "productByPath" is AEM's auto-generated query name for a model whose
     // id is "product" (modelId + "ByPath"). Rename if your model id differs.
     return json?.data?.productByPath?.item || null;
   } catch (e) {
     // eslint-disable-next-line no-console
-    console.warn('product-cf: failed to fetch content fragment', path, e);
+    console.warn('product-content-fragment: failed to fetch content fragment', path, e);
     return null;
   }
 }
@@ -86,7 +99,7 @@ async function renderProduct(product) {
 
   if (imagePath) {
     const imageWrapper = document.createElement('div');
-    imageWrapper.className = 'product-cf-image';
+    imageWrapper.className = 'product-content-fragment-image';
     const img = document.createElement('img');
     img.src = `${PUBLISH_HOST}${imagePath}`;
     img.alt = productName || '';
@@ -98,18 +111,18 @@ async function renderProduct(product) {
   }
 
   const body = document.createElement('div');
-  body.className = 'product-cf-body';
+  body.className = 'product-content-fragment-body';
 
   if (productName) {
     const title = document.createElement('h3');
-    title.className = 'product-cf-title';
+    title.className = 'product-content-fragment-title';
     title.textContent = productName;
     body.append(title);
   }
 
   if (price) {
     const priceEl = document.createElement('p');
-    priceEl.className = 'product-cf-price';
+    priceEl.className = 'product-content-fragment-price';
     priceEl.textContent = price;
     body.append(priceEl);
   }
@@ -117,10 +130,9 @@ async function renderProduct(product) {
   if (description?.html) {
     // "description" is a rich-text field: AEM returns { html, plainText,
     // markdown }. Sanitize before inserting, same as editor-support.js does.
-    // eslint-disable-next-line no-undef
     await loadScript(`${window.hlx.codeBasePath}/scripts/dompurify.min.js`);
     const descriptionEl = document.createElement('div');
-    descriptionEl.className = 'product-cf-description';
+    descriptionEl.className = 'product-content-fragment-description';
     descriptionEl.innerHTML = window.DOMPurify.sanitize(
       description.html,
       { USE_PROFILES: { html: true } },
@@ -130,7 +142,7 @@ async function renderProduct(product) {
 
   if (ctaLabel && ctaPath) {
     const cta = document.createElement('a');
-    cta.className = 'button primary product-cf-cta';
+    cta.className = 'button primary product-content-fragment-cta';
     // TODO: ctaPath is the raw AEM content path (e.g.
     // /content/universal-editor-proj/en/some-page). If your EDS URLs don't
     // map 1:1 to that path, transform it here before use.
@@ -154,7 +166,7 @@ export default async function decorate(block) {
 
   if (!path) {
     // eslint-disable-next-line no-console
-    console.warn('product-cf: no Content Fragment reference authored on this block');
+    console.warn('product-content-fragment: no Content Fragment reference authored on this block');
     return;
   }
 

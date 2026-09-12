@@ -216,7 +216,7 @@
     ]
   },
   {
-    "id": "product-cf",
+    "id": "product-content-fragment",
     "fields": [
       {
         "component": "aem-content",
