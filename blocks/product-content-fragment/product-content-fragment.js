@@ -57,7 +57,12 @@ const PUBLISH_HOST = 'https://publish-p139816-e1420456.adobeaemcloud.com';
  *   not found / request failed
  */
 async function fetchProduct(path) {
-  const url = `${PUBLISH_HOST}/graphql/execute.json/${CONFIG_NAME}/${QUERY_NAME};path=${encodeURIComponent(path)}`;
+  // AEM's matrix-parameter (;path=...) parsing does not decode %2F back to
+  // "/" - a fully encodeURIComponent()'d path 404s with "no resource
+  // available" even though the fragment exists. Encode each segment but
+  // keep the "/" separators literal, matching how AEM expects this param.
+  const encodedPath = path.split('/').map(encodeURIComponent).join('/');
+  const url = `${PUBLISH_HOST}/graphql/execute.json/${CONFIG_NAME}/${QUERY_NAME};path=${encodedPath}`;
   try {
     const resp = await fetch(url);
     if (!resp.ok) return null;
