@@ -62,22 +62,35 @@ persisted query in AEM **and** `renderProduct()` in
 ## Setup checklist (do this in AEM, then confirm here)
 
 Three constants at the top of [product-content-fragment.js](product-content-fragment.js)
-are environment-specific placeholders — confirm/update them:
+are environment-specific — **all three are now confirmed working end-to-end**:
 
-- [ ] `CONFIG_NAME` — currently `eds-xwalk-abhi` (read from the CF Model's
-      console URL: `/conf/eds-xwalk-abhi/settings/dam/models/product`)
-- [ ] `QUERY_NAME` — currently `product-by-path`; must match the name the
-      persisted query was saved under in AEM's GraphQL Query Editor.
-      **Confirmed working** — tested directly against
-      `author-p139816-e1420456.adobeaemcloud.com/graphql/execute.json/eds-xwalk-abhi/product-by-path`
-      and it returned real data.
-- [ ] `PUBLISH_HOST` — currently
-      `https://publish-p139816-e1420456.adobeaemcloud.com`, guessed from the
-      Author host in [fstab.yaml](../../fstab.yaml) using standard AEMaaCS naming.
-      **Not yet confirmed against Publish** — the working test above was
-      against Author, not Publish. Confirm the real value in Cloud Manager
-      > Environments > Publish, and confirm the CF is actually published
-      (activated), since Publish only serves published content.
+- [x] `CONFIG_NAME` — `eds-xwalk-abhi`
+- [x] `QUERY_NAME` — `product-by-path`
+- [x] `PUBLISH_HOST` — `https://publish-p139816-e1420456.adobeaemcloud.com`
+      (the guess from Author's host name using standard AEMaaCS naming was
+      correct)
+
+If you add a second Content Fragment Model / block later, re-verify these
+for that model's own config rather than assuming they're always the same.
+
+### Bug found while verifying: path encoding in the matrix parameter
+
+`fetchProduct()` originally called `encodeURIComponent()` on the whole
+path, turning `/` into `%2F` in the `;path=` matrix parameter. AEM's Sling
+matrix-parameter parsing does **not** decode `%2F` back to `/`, so every
+call failed with `"no resource available"` even for a published,
+correctly-referenced fragment — confirmed by comparing a literal-slash
+request (worked) against an `encodeURIComponent()`'d one (failed) directly
+against Publish. Fixed by encoding each path segment individually while
+keeping `/` separators literal. If you build another block that calls a
+persisted query with a path-like variable, watch for this same trap.
+
+### Bug found while verifying: 200 response can still carry GraphQL errors
+
+A 200 HTTP response can carry a GraphQL `errors` array with `data: null`
+(e.g. exactly the "not published yet" case above) — this was originally
+being swallowed with no warning. `fetchProduct()` now logs `json.errors`
+when present.
 
 ## Authoring
 
@@ -100,11 +113,19 @@ npx -y @adobe/aem-cli up --no-open --forward-browser-logs --html-folder drafts -
 (or use the `aem-dev` config in [.claude/launch.json](../../.claude/launch.json)), then open
 `http://localhost:3001/drafts/product-content-fragment-test.html`.
 
-Verified: image renders with explicit `width`/`height` (CLS prevention),
-title/price/description/CTA render correctly, and the rich-text
-`description.html` is sanitized with the project's DOMPurify
-([scripts/dompurify.min.js](../../scripts/dompurify.min.js)) before insertion —
-tested with an injected `<script>` payload to confirm it's stripped.
+Verified with a mocked GraphQL response: image renders with explicit
+`width`/`height` (CLS prevention), title/price/description/CTA render
+correctly, and the rich-text `description.html` is sanitized with the
+project's DOMPurify ([scripts/dompurify.min.js](../../scripts/dompurify.min.js))
+before insertion — tested with an injected `<script>` payload to confirm
+it's stripped.
+
+**Also verified end-to-end against real data**: with the "Samsung Android
+TV 34 INCH" Content Fragment at `/content/dam/eds-xwalk-abhi/cf/tv`
+published, the block renders correctly on `localhost:3000` via the real
+persisted query against Publish (title, price, sanitized description).
+That fragment has no image or CTA set, so those branches weren't exercised
+against real data — only against the mock above.
 
 ## Known gaps / things to revisit
 
