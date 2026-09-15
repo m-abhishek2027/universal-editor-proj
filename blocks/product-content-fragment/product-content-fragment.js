@@ -128,7 +128,7 @@ async function renderProduct(product) {
   if (price) {
     const priceEl = document.createElement('p');
     priceEl.className = 'product-content-fragment-price';
-    priceEl.textContent = price;
+    priceEl.textContent = 'Price: $'+price;
     body.append(priceEl);
   }
 
