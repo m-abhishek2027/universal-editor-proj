@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{properties.title}}</title>
+
+     <style>
+    .product-card { font-family: sans-serif; max-width: 400px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+    .product-card img { width: 100%; display: block; }
+    .product-card .body { padding: 16px; }
+    .product-card .price { font-weight: bold; font-size: 1.2em; }
+    .product-card .description { color: #555; }
+    .product-card .cta { display: inline-block; margin-top: 8px; padding: 8px 16px; background: #000; color: #fff; text-decoration: none; border-radius: 20px; }
+  </style>
+</head>
+<body>
+     <div class="product-card">
+    {{#if fields.image}}
+      {{{asset fields.image class="product-image" loading="lazy"}}}
+    {{/if}}
+    <div class="body">
+      <h3>{{fields.productName}}</h3>
+      {{#if fields.price}}
+        <p class="price">₹{{fields.price}}</p>
+      {{/if}}
+      {{#if fields.description}}
+        <div class="description">{{{fields.description}}}</div>
+      {{/if}}
+      {{#if fields.ctaLabel}}
+        <a class="cta" href="{{fields.ctaUrl}}">{{fields.ctaLabel}}</a>
+      {{/if}}
+    </div>
+  </div>
+</body>
+</html>
