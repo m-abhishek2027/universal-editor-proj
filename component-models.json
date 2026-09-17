@@ -180,6 +180,23 @@
     ]
   },
   {
+    "id": "form",
+    "fields": [
+      {
+        "component": "aem-content",
+        "name": "source",
+        "label": "Form Source",
+        "description": "Link to the form definition (JSON) to render"
+      },
+      {
+        "component": "aem-content",
+        "name": "submit",
+        "label": "Submit Endpoint",
+        "description": "Where the form data should be submitted"
+      }
+    ]
+  },
+  {
     "id": "fragment",
     "fields": [
       {
