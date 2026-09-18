@@ -242,5 +242,16 @@
         "description": "Pick the Product Content Fragment to render on this page"
       }
     ]
+  },
+  {
+    "id": "user-content-fragment",
+    "fields": [
+      {
+        "component": "aem-content",
+        "name": "reference",
+        "label": "User",
+        "description": "Pick the User Content Fragment to render on this page"
+      }
+    ]
   }
 ]

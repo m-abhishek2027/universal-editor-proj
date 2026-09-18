@@ -1,0 +1,58 @@
+.user-content-fragment {
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ gap: 16px;
+ padding: 20px;
+ border: 1px solid var(--dark-color);
+ border-radius: 8px;
+ text-align: center;
+}
+
+.user-content-fragment .user-content-fragment-image {
+ flex-shrink: 0;
+}
+
+.user-content-fragment .user-content-fragment-image img {
+ width: 120px;
+ height: 120px;
+ border-radius: 50%;
+ object-fit: cover;
+ display: block;
+}
+
+.user-content-fragment .user-content-fragment-body {
+ width: 100%;
+}
+
+.user-content-fragment .user-content-fragment-name {
+ margin: 0 0 4px;
+}
+
+.user-content-fragment .user-content-fragment-company {
+ margin: 0 0 8px;
+ font-weight: 700;
+ color: var(--dark-color);
+}
+
+.user-content-fragment .user-content-fragment-meta {
+ margin: 0 0 8px;
+ font-size: var(--body-font-size-xs);
+ color: var(--dark-color);
+}
+
+.user-content-fragment .user-content-fragment-description {
+ color: var(--dark-color);
+}
+
+@media (width >= 600px) {
+ .user-content-fragment {
+ flex-direction: row;
+ align-items: flex-start;
+ text-align: left;
+ }
+
+ .user-content-fragment .user-content-fragment-body {
+ width: auto;
+ }
+}

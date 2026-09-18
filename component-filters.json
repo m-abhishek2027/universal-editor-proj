@@ -17,7 +17,8 @@
       "columns",
       "fragment",
       "form",
-      "product-content-fragment"
+      "product-content-fragment",
+      "user-content-fragment"
     ]
   },
   {
