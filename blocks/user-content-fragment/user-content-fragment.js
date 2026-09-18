@@ -29,7 +29,7 @@ const CONFIG_NAME = 'eds-xwalk-abhi';
 const QUERY_NAME = 'user-by-path';
 // TODO: AEM names the query field <modelId>ByPath. If your "Users" model's
 // id is "users" (not "user"), change this to 'usersByPath'.
-const QUERY_ROOT = 'userByPath';
+const QUERY_ROOT = 'usersByPath';
 // TODO: your AEM Publish origin (Cloud Manager > Environments > Publish).
 const PUBLISH_HOST = 'https://publish-p139816-e1420456.adobeaemcloud.com';
 /**
